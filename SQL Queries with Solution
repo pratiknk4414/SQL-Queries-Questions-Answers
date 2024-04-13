@@ -1,0 +1,71 @@
+
+---Using TRY Database
+USE TRY
+
+--TABLE CREATING *EMPLOYEE*
+Create table employee ( id int, emp_name varchar (255), dept varchar (255), salary float, location varchar (255))
+
+SELECT * FROM employee
+
+-- INSERTING VALUES
+
+insert into employee values (1,'Pratik','DS',30000,'Pune')
+insert into employee values (2,'Akash','DA',35000,'Solapur')
+insert into employee values (3,'Vishal','DS',40000,'Pune')
+insert into employee values (4,'Santosh','DA',33000,'Solapur')
+insert into employee values (5,'Chetan','BA',34000,'Mumbai')
+insert into employee values (6,'Yogi','BA',34000,'Delhi')
+insert into employee values (7,'Pritam','BA',30000,'Delhi')
+insert into employee values (7,'Sandesh','DE',45000,'Pune')
+
+SELECT * FROM employee
+
+--- Q.1] SELECT 2ND HIGGEST SALARY
+
+--1st Method
+
+SELECT MAX(salary) FROM employee 
+WHERE SALARY < (SELECT MAX(salary) FROM employee) 
+
+--2nd Method(Windows Function)
+
+with cte as (
+select *, ROW_NUMBER() over(order by salary desc) as ranking from employee
+)
+SELECT * FROM cte WHERE ranking = 2
+
+---Q.2] Find 3rd highest salary 
+
+with cte as (
+select *, ROW_NUMBER() over (order by salary desc) as ranking from employee
+)
+select * from cte where ranking = 3
+
+---Q.3] Find 2nd highest salary based on each dept
+
+with cte as(
+select *, ROW_NUMBER() over(partition by dept order by salary desc) as ranking from employee
+)
+select * from cte where ranking=2
+
+---Q.4] Find bottom 2 salary employee details 
+
+select top 2 * from employee 
+order by salary asc
+
+---Q.5] Find top 2 salary employee details
+
+select top 2 * from employee
+order by salary desc
+
+---Q.6] Find lowest salary employee details from each dept
+
+select dept, min(salary) as min_salary from employee 
+group by dept
+
+---Q.7] find 3rd to 5ht salary employee
+
+with cte as (
+select *, ROW_NUMBER() over(order by salary) as ranking from employee
+)
+select * from cte where ranking between 3 and 5
